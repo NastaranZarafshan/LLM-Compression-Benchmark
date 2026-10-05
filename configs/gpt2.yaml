@@ -1,0 +1,61 @@
+experiment:
+  name: gpt2-compression
+  seed: 42
+  output_dir: outputs/gpt2
+
+model:
+  teacher: openai-community/gpt2
+  student: distilbert/distilgpt2
+  trust_remote_code: false
+
+methods:
+  baseline: true
+  quantization: true
+  pruning: true
+  distillation: true
+  quantization_distillation: true
+
+quantization:
+  bits: 8
+  backend: auto
+
+pruning:
+  amount: 0.10
+  sweep_amounts: []
+
+distillation:
+  temperature: 2.0
+  alpha_kl: 0.70
+  learning_rate: 5.0e-5
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  max_steps: 150
+  warmup_steps: 10
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  fp16: true
+
+data:
+  dataset_name: Salesforce/wikitext
+  dataset_config: wikitext-2-raw-v1
+  text_column: text
+  train_split: train
+  eval_split: validation
+  block_size: 256
+  max_train_samples: 4096
+  max_eval_samples: 1024
+
+benchmark:
+  device: auto
+  eval_batch_size: 4
+  eval_max_batches: 64
+  generation_batch_size: 1
+  prompt: "Language models can be compressed by"
+  max_new_tokens: 32
+  warmup_runs: 10
+  timed_runs: 30
+  save_models: false
+
+plot:
+  size_metric: model_size_mb
+  performance_metric: accuracy
